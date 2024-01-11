@@ -3,7 +3,7 @@
 
 import os
 import numpy as np
-import idx2numpy
+
 import cv2
 import random
 import math
