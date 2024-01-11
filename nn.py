@@ -387,12 +387,14 @@ if option.upper() == "T":
           print("Accuracy: ", accuracy)
           choice = input("Do you want to save the parameters? y/n")
           if choice == "y":
+            print("Please do not close while saving parameters")
             savetxt('weights1.csv',dense1.weights, delimiter=',' )
             savetxt('biases1.csv',dense1.biases, delimiter=',' )
             savetxt('weights2.csv',dense2.weights, delimiter=',' )
             savetxt('biases2.csv',dense2.biases, delimiter=',' )
             savetxt('weights3.csv',dense3.weights, delimiter=',' )
             savetxt('biases3.csv',dense3.biases, delimiter=',' )
+            print("Parameters saved. Safe to close")
             w1 = dense1.weights
             b1 = dense1.biases
             w2 = dense2.weights
