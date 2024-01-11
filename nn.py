@@ -1,5 +1,5 @@
 ##BY RIAN O DONNELL####
-##HANDWRITTEN DIGIT RECOGNITION 2023##
+##BRAIN SCAN RECOGNITION 2023##
 
 import os
 import numpy as np
@@ -82,8 +82,7 @@ class crossentropy(loss):
   def forward(self, y_pred, y_true):
     samples = len(y_pred)
 
-    y_pred_clipped = np.clip(y_pred, 1e-7,
-                             1 - 1e-7)  #clippinf numbers close to zero
+    y_pred_clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)  #clippinf numbers close to zero
 
     if len(y_true.shape) == 1:
 
@@ -180,15 +179,15 @@ class optimizer:
       layer.biases += -self.current_learningrate * bias_momentums_corrected / (np.sqrt(self.dcache_updates) + self.epsilon)
   def iterations_update(self):
     self.iterations += 1
-with open('data.csv', 'r') as f:
+with open('BTDS/data.csv', 'r') as f:
     reader = csv.reader(f)
     data = list(reader)
-    y = np.array(data, dtype=float)
+    y = np.array(data, dtype=int)
 y = (y.reshape(1,-1))
 y = (y.reshape(1,-1))
 print(y.shape)
 print(y[0])
-y = y [0]
+y = y[0]
 def runmodel(w1, b1, w2, b2,w3, b3, softmax):
             softmax = softmax
             image_data = cv2.imread('samples/image.png', cv2.IMREAD_GRAYSCALE)
@@ -239,10 +238,11 @@ def runmodel(w1, b1, w2, b2,w3, b3, softmax):
 
             print(output[maxnum])
 
-file = ('samples/train-images.idx3-ubyte')
-file2 = ('samples/train-labels.idx1-ubyte')
-samples = (r"C:\\Users\\conor\\Downloads\\Brainscans\\BTDS\\BrainTumor")
+
+samples = ("/BTDS/BrainTumor")
 images = np.array([])
+import sys
+from matplotlib import pyplot as plt
 def load_images_from_folder(folder):
     global images
 
@@ -253,9 +253,10 @@ def load_images_from_folder(folder):
         filename = (folder + '\\' + str(filename))
 
         img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
-        img = cv2.resize(img, (50,50))
+        img = cv2.resize(img, (200,200))
         np.set_printoptions(linewidth=200)
         img = 255 - img
+        progress = ((count / 4600) * 100)
 
         img = (img.reshape(1, -1))
 
@@ -264,21 +265,42 @@ def load_images_from_folder(folder):
 
             images = img
             print(images)
+
+
         elif img is not None:
 
 
 
             images = np.append(images, img, axis=0)
-            print(images.shape)
+            print("Progress: ", round(progress, 2), "%")
+
 
         count = count + 1
 
     print(images)
     return images
-load_images_from_folder(samples)
-savetxt('X.csv',images, delimiter=',' )
+
+alreadyloadedimages = False
+folder1 = (r"C:\Users\conor\Downloads\Brainscans")
+import os
+for filename in os.listdir(folder1):
+
+    file_name, file_extension = os.path.splitext(filename)
+
+    if file_extension == ".csv":
+        alreadyloadedimages = True
+import time
+if alreadyloadedimages == False:
+    print("Image preprocessing not detected")
+    print("Building file in allocated directory")
+    time.sleep(3)
+    load_images_from_folder(samples)
+    os.system('cls')
+    print("Downloading to file")
+    savetxt('X.csv',images, delimiter=',' )
 
 with open('X.csv', 'r') as f:
+    print("Opening file")
     reader = csv.reader(f)
     data = list(reader)
     X = np.array(data, dtype=float)
@@ -286,6 +308,7 @@ with open('X.csv', 'r') as f:
 
 print(X.shape)
 print(y.shape)
+
 np.set_printoptions(linewidth = 150)
 
 keys = np.array(range(X.shape[0]))
@@ -293,19 +316,23 @@ np.random.shuffle(keys)
 X = X.reshape(X.shape[0], -1) #
 print("============================================================")
 option = input("Commands: T - Train | R - Run model | H - Help: ")
-dense1 = Layer_dense(2500,2500)
-dense2 = Layer_dense(2500,2500)
+dense1 = Layer_dense(40000,40000)
+dense2 = Layer_dense(40000,40000)
 activation = reLU()
-dense3 = Layer_dense(2500, 2)
+dense3 = Layer_dense(40000, 2)
 loss_activation = Activation_softmax_crossentropy()
 softmax1 = softmax()
-optimizer = optimizer(learning_rate=0.001, decay=1e-3)
+
+optimizer = optimizer(learning_rate=0.01, decay=1e-3)
 
 X = X[keys]
 y = y[keys]
+print(X[1])
+print(y[1])
+
 if option.upper() == "T":
 
-    batch_size = int(input("Batch size for training / max 59999: "))
+    batch_size = int(input("Batch size for training / max 4600: "))
     X = X[:batch_size]
     y = y[:batch_size]
 
@@ -354,10 +381,11 @@ if option.upper() == "T":
         print("accuracy: ", accuracy)
         print("loss: ", loss)
         print("learning_rate: ", decay)
-      if accuracy > 0.975:
+      if i % 100 and i > 300:
+          choice = input("Do you want to end the program y/n")
+      if choice == "y":
           print("Accuracy: ", accuracy)
-          print("The model has reached 100 % accuracy")
-          choice = input("Do you want to start the testing? y/n")
+          choice = input("Do you want to save the parameters? y/n")
           if choice == "y":
             savetxt('weights1.csv',dense1.weights, delimiter=',' )
             savetxt('biases1.csv',dense1.biases, delimiter=',' )
@@ -371,7 +399,7 @@ if option.upper() == "T":
             b2 = dense2.biases
             w3 = dense3.weights
             b3 = dense3.biases
-            runmodel(w1, b1, w2, b2, w3, b3,  softmax1)
+
             break
 #put your own handwritten number
 elif option.upper() == "R":
@@ -430,9 +458,9 @@ keys = np.array(range(X1.shape[0]))
 np.random.shuffle(keys)
 X1 = X1.reshape(X1.shape[0], -1) #
 print(y1.shape)
+X1 = X1[:10000]
 X1 = X1[keys]
 y1 = y1[keys]
-X1 = X1[:10000]
 y1 = y1[:10000]
 print(y1[:15])
 '''
